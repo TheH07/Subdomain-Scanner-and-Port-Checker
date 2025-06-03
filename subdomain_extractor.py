@@ -15,7 +15,7 @@ import time
 from urllib3.exceptions import InsecureRequestWarning
 from urllib.parse import urlparse
 
-# Suppress only the single InsecureRequestWarning
+
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 
 def parse_arguments():
@@ -43,15 +43,15 @@ def read_file(filename):
 
 def clean_domain(domain):
     """Clean domain/URL format to ensure proper format for scanning."""
-    # Remove protocol if present
+
     if domain.startswith(('http://', 'https://')):
         parsed = urlparse(domain)
         domain = parsed.netloc
     
-    # Remove trailing slashes and paths
+
     domain = domain.split('/')[0]
     
-    # Remove port if specified
+
     domain = domain.split(':')[0]
     
     return domain
@@ -65,14 +65,14 @@ def check_subdomain(domain, subdomain, timeout=2, verbose=False):
             print(f"[+] Discovered subdomain: {url}")
         return url
     except (requests.ConnectionError, requests.Timeout, requests.RequestException):
-        # Subdomain doesn't exist or connection timed out
+      
         return None
 
 def extract_subdomains(domain, subdomains, threads=10, rate_limit=0.1, verbose=False):
     """Extract subdomains for a given domain using a wordlist with rate limiting."""
     discovered = []
     
-    # Clean domain format
+
     domain = clean_domain(domain)
     
     print(f"[*] Extracting subdomains for {domain}...")
@@ -80,15 +80,15 @@ def extract_subdomains(domain, subdomains, threads=10, rate_limit=0.1, verbose=F
     with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
         future_to_subdomain = {}
         
-        # Submit tasks with rate limiting
+     
         for i, subdomain in enumerate(subdomains):
             if i > 0 and rate_limit > 0:
-                time.sleep(rate_limit)  # Rate limiting between submissions
+                time.sleep(rate_limit)  
             
             future = executor.submit(check_subdomain, domain, subdomain, 2, verbose)
             future_to_subdomain[future] = subdomain
         
-        # Process results as they complete
+        
         for future in concurrent.futures.as_completed(future_to_subdomain):
             result = future.result()
             if result:
@@ -111,7 +111,7 @@ def main():
     """Main function."""
     args = parse_arguments()
     
-    # Read domains and subdomains
+ 
     domains = read_file(args.domains)
     subdomains = read_file(args.wordlist)
     
@@ -119,7 +119,7 @@ def main():
     
     all_discovered = []
     
-    # Process each domain
+ 
     for domain in domains:
         discovered = extract_subdomains(
             domain, 
@@ -130,7 +130,7 @@ def main():
         )
         all_discovered.extend(discovered)
     
-    # Save results
+
     save_results(all_discovered, args.output)
     
     print(f"[+] Extraction complete. Found {len(all_discovered)} subdomains in total.")
