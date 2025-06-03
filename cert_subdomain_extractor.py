@@ -65,26 +65,26 @@ def extract_subdomains_from_cert(cert_data, domain, verbose=False):
     """Extract subdomains from certificate data."""
     subdomains = set()
     
-    # Process common_name field
+
     if 'common_name' in cert_data and cert_data['common_name']:
         common_name = cert_data['common_name'].lower()
         if domain in common_name and common_name != domain:
-            # Handle wildcard certificates
+       
             if common_name.startswith('*.'):
-                common_name = common_name[2:]  # Remove *. prefix
+                common_name = common_name[2:]  
             if common_name not in subdomains:
                 subdomains.add(common_name)
     
-    # Process name_value field which may contain multiple domains
+   
     if 'name_value' in cert_data and cert_data['name_value']:
-        # Split by newlines or commas
+   
         names = re.split(r'[\n,]', cert_data['name_value'])
         for name in names:
             name = name.strip().lower()
             if domain in name and name != domain:
-                # Handle wildcard certificates
+               
                 if name.startswith('*.'):
-                    name = name[2:]  # Remove *. prefix
+                    name = name[2:] 
                 if name not in subdomains:
                     subdomains.add(name)
     
@@ -128,15 +128,15 @@ def extract_subdomains(domains, threads=5, rate_limit=1.0, verbose=False):
     with ThreadPoolExecutor(max_workers=threads) as executor:
         future_to_domain = {}
         
-        # Submit tasks with rate limiting
+        
         for i, domain in enumerate(domains):
             if i > 0 and rate_limit > 0:
-                time.sleep(rate_limit)  # Rate limiting between submissions
+                time.sleep(rate_limit)  
             
             future = executor.submit(extract_subdomains_for_domain, domain, verbose)
             future_to_domain[future] = domain
         
-        # Process results as they complete
+  
         for future in future_to_domain:
             domain = future_to_domain[future]
             try:
@@ -164,11 +164,11 @@ def main():
     """Main function."""
     args = parse_arguments()
     
-    # Read domains
+
     domains = read_domains(args.domains)
     print(f"[*] Loaded {len(domains)} domains for certificate-based subdomain extraction")
     
-    # Extract subdomains
+
     start_time = time.time()
     subdomains = extract_subdomains(
         domains, 
@@ -177,7 +177,7 @@ def main():
         verbose=args.verbose
     )
     
-    # Save results
+
     save_results(subdomains, args.output)
     
     elapsed_time = time.time() - start_time
