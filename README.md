@@ -29,7 +29,7 @@ A comprehensive tool for extracting subdomains from a list of domains and checki
 
 ```bash
 git clone https://github.com/TheH07/Subdomain-Scanner-and-Port-Checker.git
-cd subdomain-scanner
+cd Subdomain-Scanner-and-Port-Checker
 ```
 
 2. Install the required dependencies:
@@ -233,6 +233,6 @@ python subdomain_port_scanner.py -d domains.txt -sr 0.2 -pr 1.0
 - If domain resolution fails, check your internet connection and DNS settings
 - If the script runs slowly, try reducing the number of threads or increasing rate limits
 
-## License
+## Authors
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+- The H instagram : halbess1
