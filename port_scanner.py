@@ -37,7 +37,7 @@ def read_domains(filename):
             for line in file:
                 line = line.strip()
                 if line:
-                    # Clean up domain/URL format
+                    
                     domains.append(clean_domain(line))
             return domains
     except FileNotFoundError:
@@ -49,15 +49,15 @@ def read_domains(filename):
 
 def clean_domain(domain):
     """Clean domain/URL format to ensure proper format for scanning."""
-    # Remove protocol if present
+    
     if domain.startswith(('http://', 'https://')):
         parsed = urlparse(domain)
         domain = parsed.netloc
     
-    # Remove trailing slashes and paths
+    
     domain = domain.split('/')[0]
     
-    # Remove port if specified
+
     domain = domain.split(':')[0]
     
     return domain
@@ -65,10 +65,10 @@ def clean_domain(domain):
 def resolve_domain(domain):
     """Resolve domain to IP address with better error handling."""
     try:
-        # Try to resolve the domain
+    
         return socket.gethostbyname(domain)
     except socket.gaierror:
-        # Try with www. prefix if the domain doesn't have it
+       
         if not domain.startswith('www.'):
             try:
                 return socket.gethostbyname(f"www.{domain}")
@@ -87,7 +87,7 @@ def scan_ports(domain, ports, timeout=5, verbose=False):
         "error": None
     }
     
-    # Resolve domain to IP
+
     ip = resolve_domain(domain)
     if not ip:
         if verbose:
@@ -100,14 +100,14 @@ def scan_ports(domain, ports, timeout=5, verbose=False):
     if verbose:
         print(f"[*] Scanning ports for {domain} ({ip})...")
     
-    # Initialize the port scanner
+   
     nm = nmap.PortScanner()
     
     try:
-        # Scan the ports with a timeout
+  
         nm.scan(ip, ports, arguments=f'-T4 --host-timeout {timeout}s')
         
-        # Check if the host was scanned
+       
         if ip in nm.all_hosts():
             for proto in nm[ip].all_protocols():
                 lport = sorted(nm[ip][proto].keys())
@@ -143,10 +143,10 @@ def scan_domains(domains, ports, threads=5, timeout=5, rate_limit=0.5, verbose=F
     with ThreadPoolExecutor(max_workers=threads) as executor:
         future_to_domain = {}
         
-        # Submit tasks with rate limiting
+   
         for i, domain in enumerate(domains):
             if i > 0 and rate_limit > 0:
-                time.sleep(rate_limit)  # Rate limiting between submissions
+                time.sleep(rate_limit)  
             
             future = executor.submit(scan_ports, domain, ports, timeout, verbose)
             future_to_domain[future] = domain
@@ -154,7 +154,7 @@ def scan_domains(domains, ports, threads=5, timeout=5, rate_limit=0.5, verbose=F
             if verbose:
                 print(f"[*] Queued scan for {domain} ({i+1}/{total_domains})")
         
-        # Process results as they complete
+   
         completed = 0
         for future in future_to_domain:
             result = future.result()
@@ -166,7 +166,7 @@ def scan_domains(domains, ports, threads=5, timeout=5, rate_limit=0.5, verbose=F
                 open_ports = sum(1 for port_info in result["ports"].values() if port_info["state"] == "open")
                 print(f"[*] Completed {completed}/{total_domains}: {domain} - Found {open_ports} open ports")
     
-    # Count successful scans and open ports
+   
     successful_scans = sum(1 for r in results if r["ip"] is not None)
     domains_with_open_ports = sum(1 for r in results if any(port_info["state"] == "open" for port_info in r["ports"].values()))
     
@@ -188,11 +188,11 @@ def main():
     """Main function."""
     args = parse_arguments()
     
-    # Read domains
+  
     domains = read_domains(args.domains)
     print(f"[*] Loaded {len(domains)} domains for port scanning")
     
-    # Scan domains
+  
     results = scan_domains(
         domains, 
         args.ports, 
@@ -202,7 +202,7 @@ def main():
         verbose=args.verbose
     )
     
-    # Save results
+
     save_results(results, args.output)
     
     return args.output
