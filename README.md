@@ -28,7 +28,7 @@ A comprehensive tool for extracting subdomains from a list of domains and checki
 1. Clone or download this repository:
 
 ```bash
-git clone https://github.com/yourusername/subdomain-scanner.git
+git clone https://github.com/TheH07/Subdomain-Scanner-and-Port-Checker.git
 cd subdomain-scanner
 ```
 
