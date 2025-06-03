@@ -4,7 +4,7 @@ import time
 import os
 import random
 
-# قائمة User-Agents مختلفة
+
 user_agents = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Version/15.1 Safari/605.1.15",
@@ -24,32 +24,32 @@ user_agents = [
 
 ]
 
-# ملف الإخراج
+
 output_file = "domains.txt"
 existing_domains = set()
 
-# تحميل الدومينات السابقة إن وجدت
+
 if os.path.exists(output_file):
     with open(output_file, "r", encoding="utf-8") as f:
         for line in f:
             existing_domains.add(line.strip())
 
-# قائمة الامتدادات التي يجب استبعادها
+
 excluded_extensions = ['.lint','.png','.crl','.crt', '.jsp', '.pdf', '.heading', '.options', '.outer', '.text', '.title', '.stl']
 
-# دالة استخراج جميع النطاقات من النص واستثناء الامتدادات
+
 def extract_all_domains(text):
     pattern = re.compile(r'\b(?:\*\.)?(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}\b')
     all_domains = set(pattern.findall(text))
     
-    # استبعاد الامتدادات المحددة
+
     filtered_domains = {d for d in all_domains if not any(d.endswith(ext) for ext in excluded_extensions)}
     
     return filtered_domains
 
-# جمع البيانات من نطاق محدد
+
 with open(output_file, "a", encoding="utf-8") as f:
-    for cert_id in range(1, 100):  # غيّر المدى حسب الحاجة
+    for cert_id in range(1, 100):  
         headers = {
             "User-Agent": random.choice(user_agents)
         }
@@ -70,6 +70,6 @@ with open(output_file, "a", encoding="utf-8") as f:
         except Exception as e:
             print(f"[{cert_id}] Error: {e}")
 
-        time.sleep(1)  # تأخير آمن لتجنب الحظر
+        time.sleep(1)  
 
 print("\n✅ تم جمع الدومينات مع استبعاد الامتدادات المحددة.")
